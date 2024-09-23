@@ -2,13 +2,55 @@ version: '3.8'
 
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend  # Set the context to the frontend folder
+      dockerfile: Dockerfile  # Dockerfile is in the frontend folder
+    container_name: frontend
     ports:
-      - "8080:80"
+      - "8080:80"  # Exposing port 8080 for frontend
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend   # Set the context to the backend folder
+      dockerfile: Dockerfile  # Dockerfile is in the backend folder
+    container_name: backend
     ports:
       - "5000:80"
+    networks:
+      - keycloak-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+
+  postgres:
+    image: postgres:15
+    container_name: keycloak_postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: changeMe
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    restart: always
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
+    command: start --hostname-strict=false --hostname-url=http://localhost:8081 --db=postgres --db-url=jdbc:postgresql://postgres:5432/keycloak --db-username=keycloak --db-password=changeMe --http-port=8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - keycloak-network
+    restart: always
+    
+networks:
+  keycloak-network:
+
+volumes:
+  postgres_data:

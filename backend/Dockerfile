@@ -5,10 +5,14 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["backend/backend.csproj", "backend/"]
-RUN dotnet restore "backend/backend.csproj"
-COPY . .
-WORKDIR "/src/backend"
+
+# Since the context is now the backend folder, you don't need ./backend/
+COPY ["backend.csproj", "./"]
+RUN dotnet restore "backend.csproj"
+
+# Copy the rest of the backend source code
+COPY . . 
+WORKDIR "/src"
 RUN dotnet build "backend.csproj" -c Release -o /app/build
 
 FROM build AS publish

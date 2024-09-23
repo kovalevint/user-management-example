@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <OutputType>Exe</OutputType> <!-- This ensures the project builds as an executable -->
   </PropertyGroup>
 
   <ItemGroup>

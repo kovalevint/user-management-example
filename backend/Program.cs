@@ -15,6 +15,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddKeycloakHttpClient();
 
+builder.Services.AddCors(o => o.AddDefaultPolicy(b => b
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
